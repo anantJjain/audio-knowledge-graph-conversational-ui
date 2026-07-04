@@ -182,7 +182,12 @@ def _run_pipeline(cmd):
             log = (log + line)[-3000:]
             _write_job("running", log)
         proc.wait(timeout=PIPELINE_TIMEOUT)
-        _write_job("done" if proc.returncode == 0 else "error", log)
+        if proc.returncode == 0:
+            _write_job("done", log)
+        elif proc.returncode == -9:
+            _write_job("error", log + "\nProcess was killed (out of memory). Upgrade to a higher memory tier or run locally.")
+        else:
+            _write_job("error", log)
     except subprocess.TimeoutExpired:
         os.killpg(os.getpgid(proc.pid), signal.SIGKILL)
         _write_job("error", log + "\nPipeline timed out. Real audio processing is too slow for this server tier — use mock mode or run locally.")
