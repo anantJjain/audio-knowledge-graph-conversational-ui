@@ -2,6 +2,7 @@
 Shared configuration and ontology for the HNI Investor-Advisor
 Knowledge Graph POC.
 """
+import os
 
 ALLOWED_PREDICATES = [
     "has_risk_appetite",
@@ -30,8 +31,9 @@ def get_client():
         base_url="https://api.groq.com/openai/v1",
     )
 
-DATA_DIR = "/Users/anantjain/Desktop/poc/hni_kg_poc/data"
-OUTPUT_DIR = "/Users/anantjain/Desktop/poc/hni_kg_poc/output"
+_BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DATA_DIR = os.path.join(_BASE, "data")
+OUTPUT_DIR = os.path.join(_BASE, "output")
 
 RAW_AUDIO = f"{DATA_DIR}/recording.wav"
 CLEAN_AUDIO = f"{DATA_DIR}/recording_clean.wav"
