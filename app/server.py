@@ -170,6 +170,9 @@ def api_process():
     mode = request.form.get("mode", "mock")
     run_script = os.path.join(BASE, "pipeline", "run_pipeline.py")
 
+    if not os.environ.get("GROQ_API_KEY"):
+        return jsonify({"error": "GROQ_API_KEY is not set. Add it in your Render environment variables."}), 500
+
     if mode == "real":
         f = request.files.get("audio")
         if not f:

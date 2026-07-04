@@ -69,7 +69,7 @@ def extract_triples(segments: list) -> list:
         model=OPENAI_MODEL,
         max_tokens=4000,
         tools=[RECORD_FACT_TOOL],
-        tool_choice="required",
+        tool_choice="auto",
         messages=[
             {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": f"Extract all facts from this transcript:\n\n{transcript_text}"},
@@ -93,6 +93,7 @@ if __name__ == "__main__":
 
     triples = extract_triples(segments)
 
+    os.makedirs(os.path.dirname(RAW_TRIPLES), exist_ok=True)
     with open(RAW_TRIPLES, "w") as f:
         json.dump(triples, f, indent=2, ensure_ascii=False)
 

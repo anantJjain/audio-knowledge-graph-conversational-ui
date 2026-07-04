@@ -66,6 +66,7 @@ if __name__ == "__main__":
     flags = flag_transcript_issues(segments)
 
     output = {"segments": segments, "flags": flags}
+    os.makedirs(os.path.dirname(CLEANED_TRANSCRIPT), exist_ok=True)
     with open(CLEANED_TRANSCRIPT, "w") as f:
         json.dump(output, f, indent=2, ensure_ascii=False)
 

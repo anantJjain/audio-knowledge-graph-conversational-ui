@@ -77,6 +77,7 @@ if __name__ == "__main__":
 
     G = build_graph(triples)
 
+    os.makedirs(os.path.dirname(GRAPH_PICKLE), exist_ok=True)
     with open(GRAPH_PICKLE, "wb") as f:
         pickle.dump(G, f)
 

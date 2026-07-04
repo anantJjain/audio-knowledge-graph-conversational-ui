@@ -284,7 +284,10 @@ document.getElementById('composer').addEventListener('submit', async (e) => {
 
 async function pollStatus() {
   return new Promise((resolve) => {
+    let ticks = 0;
+    const MAX_TICKS = 200; // 10 minutes max
     const interval = setInterval(async () => {
+      ticks++;
       try {
         const res = await fetch('/api/process/status');
         const data = await res.json();
@@ -292,8 +295,16 @@ async function pollStatus() {
         if (data.status === 'done' || data.status === 'error') {
           clearInterval(interval);
           resolve(data);
+        } else if (ticks >= MAX_TICKS) {
+          clearInterval(interval);
+          resolve({ status: 'error', log: 'Timed out waiting for pipeline. Check server logs.' });
         }
-      } catch (_) {}
+      } catch (_) {
+        if (ticks >= MAX_TICKS) {
+          clearInterval(interval);
+          resolve({ status: 'error', log: 'Lost connection to server.' });
+        }
+      }
     }, 3000);
   });
 }

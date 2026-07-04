@@ -76,6 +76,7 @@ if __name__ == "__main__":
     canonical_map = resolve_entities(triples)
     resolved = apply_canonical_map(triples, canonical_map)
 
+    os.makedirs(os.path.dirname(RESOLVED_TRIPLES), exist_ok=True)
     with open(RESOLVED_TRIPLES, "w") as f:
         json.dump(resolved, f, indent=2, ensure_ascii=False)
 
