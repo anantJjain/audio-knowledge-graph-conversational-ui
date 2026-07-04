@@ -1,0 +1,82 @@
+[
+  {
+    "evidence_text": "आपका जो equity allocation है, वो अभी 70% के around है",
+    "object": "70% equity allocation",
+    "predicate": "has_equity_allocation",
+    "speaker": "Advisor",
+    "subject": "Investor Portfolio",
+    "timestamp": "00:00"
+  },
+  {
+    "evidence_text": "मुझे growth चाहिए",
+    "object": "growth",
+    "predicate": "has_goal",
+    "speaker": "Investor",
+    "subject": "Investor",
+    "timestamp": "00:12"
+  },
+  {
+    "evidence_text": "मुझे growth चाहिए",
+    "object": "aggressive",
+    "predicate": "has_risk_appetite",
+    "speaker": "Investor",
+    "subject": "Investor",
+    "timestamp": "00:12"
+  },
+  {
+    "evidence_text": "मैं रेकमेंड करूँगा कि आप HDFC फ्लैक्सि कैप फंड में पचास लाख एलोकेट करूँ",
+    "object": "HDFC Flexi Cap Fund",
+    "predicate": "recommends",
+    "speaker": "Advisor",
+    "subject": "Investor Portfolio",
+    "timestamp": "00:17"
+  },
+  {
+    "evidence_text": "मैं 30 लाख से start करना चाहता हूँ",
+    "object": "30 lakh",
+    "predicate": "plans_to_invest",
+    "speaker": "Investor",
+    "subject": "HDFC Flexi Cap Fund",
+    "timestamp": "00:26"
+  },
+  {
+    "evidence_text": "मेरा 1 गोल है कि 2030 तक मैं रिटायरमेंट कॉर्पस रेडी करना चाहता हूं",
+    "object": "retirement corpus by 2030",
+    "predicate": "has_goal",
+    "speaker": "Investor",
+    "subject": "Investor",
+    "timestamp": "00:36"
+  },
+  {
+    "evidence_text": "मैं 1 सेपरेट एसआईपी रेकमेंड करूंगा",
+    "object": "separate SIP",
+    "predicate": "recommends",
+    "speaker": "Advisor",
+    "subject": "Investor Portfolio",
+    "timestamp": "00:43"
+  },
+  {
+    "evidence_text": "मेरा 1 concern है मेरा, market अभी काफी volatile लग रहा है",
+    "object": "market volatility",
+    "predicate": "has_concern",
+    "speaker": "Investor",
+    "subject": "Investor",
+    "timestamp": "00:51"
+  },
+  {
+    "evidence_text": "long term horizon देखते हुए ये टाइमिंग ठीक है",
+    "object": "current market timing",
+    "predicate": "agreed_to",
+    "speaker": "Advisor",
+    "subject": "Investor Portfolio",
+    "timestamp": "00:58"
+  },
+  {
+    "evidence_text": "I will send you a note on this by Friday",
+    "object": "note on market timing",
+    "predicate": "follow_up_required",
+    "speaker": "Advisor",
+    "subject": "Investor",
+    "timestamp": "00:58"
+  }
+]

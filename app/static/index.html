@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Call Ledger — Conversation Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="/static/vis-network.min.js"></script>
+<style>
+  :root {
+    --paper: #FAF8F2;
+    --ink: #14201A;
+    --bottle: #0E3B2E;
+    --bottle-soft: #1A5443;
+    --brass: #B9862F;
+    --brass-soft: #E9DCC0;
+    --sage: #8FA895;
+    --line: #DAD4C4;
+    --receipt: #F3EFE4;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    display: flex; flex-direction: column;
+  }
+
+  header {
+    background: var(--bottle);
+    color: var(--paper);
+    padding: 14px 24px;
+    display: flex; align-items: baseline; gap: 16px;
+    border-bottom: 3px solid var(--brass);
+  }
+  header h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600; font-size: 1.35rem; letter-spacing: 0.01em;
+  }
+  header .sub {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem; opacity: 0.75; letter-spacing: 0.08em; text-transform: uppercase;
+  }
+  header .spacer { flex: 1; }
+  .process-controls { display: flex; gap: 8px; align-items: center; }
+  .btn {
+    font-family: 'IBM Plex Sans', sans-serif; font-weight: 600; font-size: 0.8rem;
+    border: 1px solid var(--brass); background: transparent; color: var(--paper);
+    padding: 7px 14px; cursor: pointer; border-radius: 3px;
+    transition: background 0.15s;
+  }
+  .btn:hover { background: var(--bottle-soft); }
+  .btn:focus-visible { outline: 2px solid var(--brass); outline-offset: 2px; }
+  .btn.brass { background: var(--brass); color: var(--ink); border-color: var(--brass); }
+  .btn.brass:hover { background: #CE9B3F; }
+  input[type=file] { display: none; }
+
+  main { flex: 1; display: grid; grid-template-columns: minmax(420px, 46%) 1fr; min-height: 0; }
+
+  /* ------ chat pane ------ */
+  #chat-pane { display: flex; flex-direction: column; border-right: 1px solid var(--line); min-height: 0; }
+  #messages { flex: 1; overflow-y: auto; padding: 26px 26px 12px; }
+  .msg { margin-bottom: 22px; max-width: 92%; }
+  .msg .who {
+    font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--sage);
+    margin-bottom: 5px;
+  }
+  .msg.user { margin-left: auto; }
+  .msg.user .who { text-align: right; color: var(--brass); }
+  .msg .bubble {
+    padding: 12px 15px; border-radius: 4px; line-height: 1.55; font-size: 0.92rem;
+    white-space: pre-wrap;
+  }
+  .msg.user .bubble { background: var(--bottle); color: var(--paper); }
+  .msg.bot .bubble { background: #fff; border: 1px solid var(--line); }
+
+  /* signature element: the evidence receipt */
+  .receipt {
+    margin-top: 10px; background: var(--receipt);
+    border-left: 3px solid var(--brass);
+    padding: 10px 12px;
+  }
+  .receipt .r-title {
+    font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--bottle);
+    margin-bottom: 7px;
+  }
+  .chip {
+    font-family: 'IBM Plex Mono', monospace; font-size: 0.74rem;
+    padding: 6px 0; border-top: 1px dashed var(--line); line-height: 1.5;
+  }
+  .chip:first-of-type { border-top: none; padding-top: 0; }
+  .chip .meta { color: var(--bottle); font-weight: 500; }
+  .chip .quote { color: #5a5648; display: block; }
+
+  #composer {
+    display: flex; gap: 10px; padding: 16px 22px 20px;
+    border-top: 1px solid var(--line); background: #fff;
+  }
+  #composer input {
+    flex: 1; font-family: 'IBM Plex Sans', sans-serif; font-size: 0.95rem;
+    padding: 11px 14px; border: 1px solid var(--line); border-radius: 3px;
+    background: var(--paper);
+  }
+  #composer input:focus { outline: 2px solid var(--bottle); outline-offset: 1px; }
+
+  /* ------ graph pane ------ */
+  #graph-pane { display: flex; flex-direction: column; min-height: 0; }
+  #graph-pane .pane-label {
+    font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--sage);
+    padding: 14px 20px 8px;
+  }
+  #graph { flex: 1; min-height: 0; }
+  #empty-state {
+    flex: 1; display: flex; flex-direction: column; align-items: center;
+    justify-content: center; gap: 12px; color: var(--sage); padding: 40px;
+    text-align: center;
+  }
+  #empty-state .big { font-family: 'Fraunces', serif; font-size: 1.4rem; color: var(--ink); }
+
+  #status-bar {
+    font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem;
+    padding: 8px 20px; color: var(--bottle); background: var(--brass-soft);
+    display: none;
+  }
+
+  @media (max-width: 900px) {
+    main { grid-template-columns: 1fr; }
+    #graph-pane { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Call Ledger</h1>
+  <span class="sub">Investor–Advisor conversation intelligence</span>
+  <span class="spacer"></span>
+  <div class="process-controls">
+    <button class="btn" id="btn-mock">Process sample call</button>
+    <label class="btn brass" for="audio-file">Process a recording</label>
+    <input type="file" id="audio-file" accept="audio/*">
+  </div>
+</header>
+
+<div id="status-bar"></div>
+
+<main>
+  <section id="chat-pane" aria-label="Chat">
+    <div id="messages"></div>
+    <form id="composer">
+      <input id="question" type="text" placeholder="Ask about the call — e.g. What did the advisor recommend?"
+             autocomplete="off" aria-label="Your question">
+      <button class="btn brass" type="submit" style="color:var(--ink)">Ask</button>
+    </form>
+  </section>
+
+  <section id="graph-pane" aria-label="Knowledge graph">
+    <div class="pane-label">Knowledge graph — facts referenced in the last answer are lit</div>
+    <div id="graph"></div>
+    <div id="empty-state" style="display:none">
+      <div class="big">No ledger yet</div>
+      <div>Process the sample call, or upload a recording,<br>to build the knowledge graph.</div>
+    </div>
+  </section>
+</main>
+
+<script>
+const messagesEl = document.getElementById('messages');
+const statusBar = document.getElementById('status-bar');
+let network = null, allNodes = null, allEdges = null;
+
+function setStatus(text) {
+  statusBar.style.display = text ? 'block' : 'none';
+  statusBar.textContent = text || '';
+}
+
+function addMessage(who, text, facts) {
+  const wrap = document.createElement('div');
+  wrap.className = 'msg ' + (who === 'You' ? 'user' : 'bot');
+  const whoEl = document.createElement('div');
+  whoEl.className = 'who'; whoEl.textContent = who;
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble'; bubble.textContent = text;
+  wrap.append(whoEl, bubble);
+
+  if (facts && facts.length) {
+    const receipt = document.createElement('div');
+    receipt.className = 'receipt';
+    const title = document.createElement('div');
+    title.className = 'r-title';
+    title.textContent = 'Evidence — ' + facts.length + ' fact' + (facts.length > 1 ? 's' : '') + ' from the call';
+    receipt.appendChild(title);
+    facts.forEach(f => {
+      const chip = document.createElement('div');
+      chip.className = 'chip';
+      const meta = document.createElement('span');
+      meta.className = 'meta';
+      meta.textContent = f.speaker + ' @ ' + f.timestamp + ' — ' + f.subject + ' · ' + f.relation + ' · ' + f.object;
+      const quote = document.createElement('span');
+      quote.className = 'quote';
+      quote.textContent = '“' + f.evidence + '”';
+      chip.append(meta, quote);
+      receipt.appendChild(chip);
+    });
+    wrap.appendChild(receipt);
+  }
+  messagesEl.appendChild(wrap);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+}
+
+async function loadGraph() {
+  const res = await fetch('/api/graph');
+  const data = await res.json();
+  const graphDiv = document.getElementById('graph');
+  const empty = document.getElementById('empty-state');
+  if (!data.ready || !data.nodes.length) {
+    graphDiv.style.display = 'none'; empty.style.display = 'flex';
+    return;
+  }
+  graphDiv.style.display = 'block'; empty.style.display = 'none';
+
+  allNodes = new vis.DataSet(data.nodes.map(n => ({
+    ...n, shape: 'box',
+    color: { background: '#FFFFFF', border: '#DAD4C4' },
+    font: { face: 'IBM Plex Sans', size: 13, color: '#14201A' },
+  })));
+  allEdges = new vis.DataSet(data.edges.map((e, i) => ({
+    id: i, ...e, arrows: 'to',
+    font: { face: 'IBM Plex Mono', size: 9, color: '#8FA895', align: 'middle' },
+    color: { color: '#C9C2AE' },
+    title: e.relation + ' — ' + e.speaker + ' @ ' + e.timestamp + '\n"' + e.evidence + '"',
+  })));
+  network = new vis.Network(graphDiv, { nodes: allNodes, edges: allEdges }, {
+    physics: { solver: 'forceAtlas2Based', stabilization: { iterations: 150 } },
+    interaction: { hover: true },
+  });
+}
+
+function highlightNodes(ids) {
+  if (!allNodes) return;
+  allNodes.forEach(n => {
+    const lit = ids.includes(n.id);
+    allNodes.update({
+      id: n.id,
+      color: lit
+        ? { background: '#B9862F', border: '#0E3B2E' }
+        : { background: '#FFFFFF', border: '#DAD4C4' },
+      font: { face: 'IBM Plex Sans', size: 13, color: lit ? '#FAF8F2' : '#14201A' },
+    });
+  });
+}
+
+document.getElementById('composer').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const input = document.getElementById('question');
+  const q = input.value.trim();
+  if (!q) return;
+  input.value = '';
+  addMessage('You', q);
+  setStatus('Searching the ledger…');
+  try {
+    const res = await fetch('/api/query', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question: q }),
+    });
+    const data = await res.json();
+    if (data.error) { addMessage('Ledger', data.error); }
+    else {
+      addMessage('Ledger', data.answer, data.facts);
+      highlightNodes(data.highlight_nodes || []);
+    }
+  } catch (err) {
+    addMessage('Ledger', 'Request failed: ' + err.message);
+  }
+  setStatus('');
+});
+
+async function runProcess(formData) {
+  setStatus('Running extraction pipeline — this can take a few minutes for real audio…');
+  try {
+    const res = await fetch('/api/process', { method: 'POST', body: formData });
+    const data = await res.json();
+    if (data.ok) {
+      setStatus('');
+      addMessage('Ledger', 'Recording processed. The knowledge graph is ready — ask away.');
+      await loadGraph();
+    } else {
+      setStatus('');
+      addMessage('Ledger', 'Pipeline failed. Last log lines:\n' + (data.log || data.error || 'unknown error'));
+    }
+  } catch (err) {
+    setStatus('');
+    addMessage('Ledger', 'Processing failed: ' + err.message);
+  }
+}
+
+document.getElementById('btn-mock').addEventListener('click', () => {
+  const fd = new FormData(); fd.append('mode', 'mock');
+  runProcess(fd);
+});
+
+document.getElementById('audio-file').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const fd = new FormData();
+  fd.append('mode', 'real');
+  fd.append('audio', file);
+  runProcess(fd);
+});
+
+loadGraph();
+addMessage('Ledger', 'Welcome. Process the sample call (top right) or upload a recording, then ask questions like:\n• What is the investor’s risk appetite?\n• What did the advisor recommend?\n• What follow-ups are pending?');
+</script>
+</body>
+</html>

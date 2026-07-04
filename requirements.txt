@@ -1,0 +1,8 @@
+openai
+networkx
+sarvamai
+deepfilternet
+torchaudio
+torch
+pydub
+flask

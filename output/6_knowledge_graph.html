@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.9/vis-network.min.js"></script>
+<style>
+  body { font-family: sans-serif; margin: 0; }
+  #graph { width: 100vw; height: 100vh; border: none; }
+</style>
+</head>
+<body>
+<div id="graph"></div>
+<script>
+  const nodes = new vis.DataSet([{"id": "Investor Portfolio", "label": "Investor Portfolio"}, {"id": "70% equity allocation", "label": "70% equity allocation"}, {"id": "Investor", "label": "Investor"}, {"id": "growth", "label": "growth"}, {"id": "aggressive", "label": "aggressive"}, {"id": "HDFC Flexi Cap Fund", "label": "HDFC Flexi Cap Fund"}, {"id": "30 lakh", "label": "30 lakh"}, {"id": "retirement corpus by 2030", "label": "retirement corpus by 2030"}, {"id": "separate SIP", "label": "separate SIP"}, {"id": "market volatility", "label": "market volatility"}, {"id": "current market timing", "label": "current market timing"}, {"id": "note on market timing", "label": "note on market timing"}]);
+  const edges = new vis.DataSet([{"from": "Investor Portfolio", "to": "70% equity allocation", "label": "has_equity_allocation", "title": "has_equity_allocation (said by Advisor @ 00:00)\n\"\u0906\u092a\u0915\u093e \u091c\u094b equity allocation \u0939\u0948, \u0935\u094b \u0905\u092d\u0940 70% \u0915\u0947 around \u0939\u0948\""}, {"from": "Investor Portfolio", "to": "HDFC Flexi Cap Fund", "label": "recommends", "title": "recommends (said by Advisor @ 00:17)\n\"\u092e\u0948\u0902 \u0930\u0947\u0915\u092e\u0947\u0902\u0921 \u0915\u0930\u0942\u0901\u0917\u093e \u0915\u093f \u0906\u092a HDFC \u092b\u094d\u0932\u0948\u0915\u094d\u0938\u093f \u0915\u0948\u092a \u092b\u0902\u0921 \u092e\u0947\u0902 \u092a\u091a\u093e\u0938 \u0932\u093e\u0916 \u090f\u0932\u094b\u0915\u0947\u091f \u0915\u0930\u0942\u0901\""}, {"from": "Investor Portfolio", "to": "separate SIP", "label": "recommends", "title": "recommends (said by Advisor @ 00:43)\n\"\u092e\u0948\u0902 1 \u0938\u0947\u092a\u0930\u0947\u091f \u090f\u0938\u0906\u0908\u092a\u0940 \u0930\u0947\u0915\u092e\u0947\u0902\u0921 \u0915\u0930\u0942\u0902\u0917\u093e\""}, {"from": "Investor Portfolio", "to": "current market timing", "label": "agreed_to", "title": "agreed_to (said by Advisor @ 00:58)\n\"long term horizon \u0926\u0947\u0916\u0924\u0947 \u0939\u0941\u090f \u092f\u0947 \u091f\u093e\u0907\u092e\u093f\u0902\u0917 \u0920\u0940\u0915 \u0939\u0948\""}, {"from": "Investor", "to": "growth", "label": "has_goal", "title": "has_goal (said by Investor @ 00:12)\n\"\u092e\u0941\u091d\u0947 growth \u091a\u093e\u0939\u093f\u090f\""}, {"from": "Investor", "to": "aggressive", "label": "has_risk_appetite", "title": "has_risk_appetite (said by Investor @ 00:12)\n\"\u092e\u0941\u091d\u0947 growth \u091a\u093e\u0939\u093f\u090f\""}, {"from": "Investor", "to": "retirement corpus by 2030", "label": "has_goal", "title": "has_goal (said by Investor @ 00:36)\n\"\u092e\u0947\u0930\u093e 1 \u0917\u094b\u0932 \u0939\u0948 \u0915\u093f 2030 \u0924\u0915 \u092e\u0948\u0902 \u0930\u093f\u091f\u093e\u092f\u0930\u092e\u0947\u0902\u091f \u0915\u0949\u0930\u094d\u092a\u0938 \u0930\u0947\u0921\u0940 \u0915\u0930\u0928\u093e \u091a\u093e\u0939\u0924\u093e \u0939\u0942\u0902\""}, {"from": "Investor", "to": "market volatility", "label": "has_concern", "title": "has_concern (said by Investor @ 00:51)\n\"\u092e\u0947\u0930\u093e 1 concern \u0939\u0948 \u092e\u0947\u0930\u093e, market \u0905\u092d\u0940 \u0915\u093e\u092b\u0940 volatile \u0932\u0917 \u0930\u0939\u093e \u0939\u0948\""}, {"from": "Investor", "to": "note on market timing", "label": "follow_up_required", "title": "follow_up_required (said by Advisor @ 00:58)\n\"I will send you a note on this by Friday\""}, {"from": "HDFC Flexi Cap Fund", "to": "30 lakh", "label": "plans_to_invest", "title": "plans_to_invest (said by Investor @ 00:26)\n\"\u092e\u0948\u0902 30 \u0932\u093e\u0916 \u0938\u0947 start \u0915\u0930\u0928\u093e \u091a\u093e\u0939\u0924\u093e \u0939\u0942\u0901\""}]);
+  const container = document.getElementById('graph');
+  const data = { nodes, edges };
+  const options = {
+    nodes: { shape: 'box', color: '#f4e8d0', font: { size: 14 } },
+    edges: { arrows: 'to', font: { size: 11, align: 'middle' }, color: '#888' },
+    physics: { solver: 'forceAtlas2Based', stabilization: true }
+  };
+  new vis.Network(container, data, options);
+</script>
+</body>
+</html>
