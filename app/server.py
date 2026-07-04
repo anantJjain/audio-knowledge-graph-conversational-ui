@@ -154,11 +154,16 @@ def _run_pipeline(cmd):
     _job["status"] = "running"
     _job["log"] = ""
     try:
-        result = subprocess.run(cmd, capture_output=True, text=True, timeout=1800)
-        _job["log"] = (result.stdout + "\n" + result.stderr)[-3000:]
-        _job["status"] = "done" if result.returncode == 0 else "error"
+        proc = subprocess.Popen(
+            cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+            text=True, bufsize=1,
+        )
+        for line in proc.stdout:
+            _job["log"] = (_job["log"] + line)[-3000:]
+        proc.wait(timeout=1800)
+        _job["status"] = "done" if proc.returncode == 0 else "error"
     except Exception as e:
-        _job["log"] = str(e)
+        _job["log"] += "\n" + str(e)
         _job["status"] = "error"
 
 
