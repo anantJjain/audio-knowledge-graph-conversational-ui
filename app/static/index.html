@@ -292,8 +292,9 @@ async function pollStatus() {
         const res = await fetch('/api/process/status');
         const data = await res.json();
         setStatus('Pipeline running… ' + (data.log ? data.log.split('\n').filter(Boolean).pop() : ''));
-        if (data.status === 'done' || data.status === 'error') {
+        if (data.status === 'done' || data.status === 'error' || data.status === 'idle') {
           clearInterval(interval);
+          if (data.status === 'idle') data = { status: 'error', log: 'Server restarted mid-run. Please try again.' };
           resolve(data);
         } else if (ticks >= MAX_TICKS) {
           clearInterval(interval);
