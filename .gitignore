@@ -18,6 +18,10 @@ env/
 # macOS
 .DS_Store
 
+# Audio files
+data/*.wav
+data/*.mp3
+
 # Logs
 *.log
 firebase-debug.log
