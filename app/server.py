@@ -154,9 +154,11 @@ def _run_pipeline(cmd):
     _job["status"] = "running"
     _job["log"] = ""
     try:
+        env = os.environ.copy()
+        env["PYTHONUNBUFFERED"] = "1"
         proc = subprocess.Popen(
             cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-            text=True, bufsize=1,
+            text=True, bufsize=1, env=env,
         )
         for line in proc.stdout:
             _job["log"] = (_job["log"] + line)[-3000:]
