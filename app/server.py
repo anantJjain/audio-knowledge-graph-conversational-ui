@@ -18,6 +18,7 @@ import sys
 import json
 import pickle
 import subprocess
+import threading
 
 from flask import Flask, request, jsonify, send_from_directory
 
@@ -146,10 +147,26 @@ def api_query():
     })
 
 
+_job = {"status": "idle", "log": ""}  # simple in-process state
+
+
+def _run_pipeline(cmd):
+    _job["status"] = "running"
+    _job["log"] = ""
+    try:
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=1800)
+        _job["log"] = (result.stdout + "\n" + result.stderr)[-3000:]
+        _job["status"] = "done" if result.returncode == 0 else "error"
+    except Exception as e:
+        _job["log"] = str(e)
+        _job["status"] = "error"
+
+
 @app.post("/api/process")
 def api_process():
-    """Run the extraction pipeline. mode=mock uses the sample transcript;
-    otherwise expects an uploaded audio file."""
+    if _job["status"] == "running":
+        return jsonify({"error": "Pipeline already running."}), 409
+
     mode = request.form.get("mode", "mock")
     run_script = os.path.join(BASE, "pipeline", "run_pipeline.py")
 
@@ -163,11 +180,15 @@ def api_process():
     else:
         cmd = [sys.executable, run_script, "--mock"]
 
-    result = subprocess.run(cmd, capture_output=True, text=True, timeout=1800)
-    ok = result.returncode == 0
-    log_tail = (result.stdout + "\n" + result.stderr)[-3000:]
-    return jsonify({"ok": ok, "log": log_tail}), (200 if ok else 500)
+    threading.Thread(target=_run_pipeline, args=(cmd,), daemon=True).start()
+    return jsonify({"ok": True, "status": "running"})
+
+
+@app.get("/api/process/status")
+def api_process_status():
+    return jsonify(_job)
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8080, debug=False)
+    port = int(os.environ.get("PORT", 8080))
+    app.run(host="0.0.0.0", port=port, debug=False)
