@@ -346,6 +346,7 @@ document.getElementById('btn-mock').addEventListener('click', () => {
 document.getElementById('audio-file').addEventListener('change', (e) => {
   const file = e.target.files[0];
   if (!file) return;
+  if (!confirm('Real audio processing runs DeepFilterNet on CPU and may take 30+ minutes or fail on the free tier.\n\nUse "Process sample call" to test the full pipeline instantly.\n\nContinue with real audio?')) return;
   const fd = new FormData();
   fd.append('mode', 'real');
   fd.append('audio', file);

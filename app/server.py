@@ -17,6 +17,7 @@ import os
 import sys
 import json
 import pickle
+import signal
 import subprocess
 import threading
 
@@ -163,6 +164,9 @@ def _write_job(status, log=""):
         json.dump({"status": status, "log": log}, f)
 
 
+PIPELINE_TIMEOUT = int(os.environ.get("PIPELINE_TIMEOUT", 600))  # 10 min default
+
+
 def _run_pipeline(cmd):
     _write_job("running")
     log = ""
@@ -172,12 +176,16 @@ def _run_pipeline(cmd):
         proc = subprocess.Popen(
             cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
             text=True, bufsize=1, env=env,
+            preexec_fn=os.setsid,  # new process group so we can kill tree
         )
         for line in proc.stdout:
             log = (log + line)[-3000:]
             _write_job("running", log)
-        proc.wait(timeout=1800)
+        proc.wait(timeout=PIPELINE_TIMEOUT)
         _write_job("done" if proc.returncode == 0 else "error", log)
+    except subprocess.TimeoutExpired:
+        os.killpg(os.getpgid(proc.pid), signal.SIGKILL)
+        _write_job("error", log + "\nPipeline timed out. Real audio processing is too slow for this server tier — use mock mode or run locally.")
     except Exception as e:
         _write_job("error", log + "\n" + str(e))
 
