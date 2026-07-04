@@ -147,12 +147,25 @@ def api_query():
     })
 
 
-_job = {"status": "idle", "log": ""}  # simple in-process state
+JOB_FILE = "/tmp/pipeline_job.json"
+
+
+def _read_job():
+    try:
+        with open(JOB_FILE) as f:
+            return json.load(f)
+    except Exception:
+        return {"status": "idle", "log": ""}
+
+
+def _write_job(status, log=""):
+    with open(JOB_FILE, "w") as f:
+        json.dump({"status": status, "log": log}, f)
 
 
 def _run_pipeline(cmd):
-    _job["status"] = "running"
-    _job["log"] = ""
+    _write_job("running")
+    log = ""
     try:
         env = os.environ.copy()
         env["PYTHONUNBUFFERED"] = "1"
@@ -161,17 +174,17 @@ def _run_pipeline(cmd):
             text=True, bufsize=1, env=env,
         )
         for line in proc.stdout:
-            _job["log"] = (_job["log"] + line)[-3000:]
+            log = (log + line)[-3000:]
+            _write_job("running", log)
         proc.wait(timeout=1800)
-        _job["status"] = "done" if proc.returncode == 0 else "error"
+        _write_job("done" if proc.returncode == 0 else "error", log)
     except Exception as e:
-        _job["log"] += "\n" + str(e)
-        _job["status"] = "error"
+        _write_job("error", log + "\n" + str(e))
 
 
 @app.post("/api/process")
 def api_process():
-    if _job["status"] == "running":
+    if _read_job()["status"] == "running":
         return jsonify({"error": "Pipeline already running."}), 409
 
     mode = request.form.get("mode", "mock")
@@ -196,7 +209,7 @@ def api_process():
 
 @app.get("/api/process/status")
 def api_process_status():
-    return jsonify(_job)
+    return jsonify(_read_job())
 
 
 if __name__ == "__main__":
