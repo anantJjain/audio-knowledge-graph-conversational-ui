@@ -10,7 +10,7 @@ import os
 import sys
 import json
 sys.path.append(os.path.dirname(__file__))
-from config import CLEANED_TRANSCRIPT, RAW_TRIPLES, GROQ_MODEL, ALLOWED_PREDICATES, get_client
+from config import CLEANED_TRANSCRIPT, RAW_TRIPLES, GROQ_MODEL_TOOLS as GROQ_MODEL, ALLOWED_PREDICATES, get_client
 
 SYSTEM_PROMPT = f"""You are extracting structured facts from a transcript of a \
 financial advisory phone call between an Investor and an Advisor. The \
