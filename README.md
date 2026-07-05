@@ -1,3 +1,12 @@
+---
+title: Voice POC
+emoji: 🎙️
+colorFrom: green
+colorTo: blue
+sdk: docker
+pinned: false
+---
+
 # HNI Investor-Advisor Call -> Knowledge Graph POC
 
 Turns a noisy Hinglish investor-advisor call recording into a queryable
