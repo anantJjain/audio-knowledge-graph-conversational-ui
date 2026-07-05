@@ -17,15 +17,21 @@ from config import GRAPH_PICKLE, GROQ_MODEL, get_client
 
 
 def find_relevant_nodes(G: nx.DiGraph, question: str) -> list:
-    q_words = set(w.lower() for w in question.split() if len(w) > 2)
-    scored = []
+    q_words = set(w.lower().strip("?,.") for w in question.split() if len(w) > 2)
+    node_scores = {}
     for node in G.nodes():
-        node_words = set(node.lower().split())
-        overlap = len(q_words & node_words)
-        if overlap > 0:
-            scored.append((overlap, node))
-    scored.sort(reverse=True)
-    return [n for _, n in scored] or list(G.nodes())
+        score = len(q_words & set(node.lower().split()))
+        if score > 0:
+            node_scores[node] = node_scores.get(node, 0) + score
+    for u, v, d in G.edges(data=True):
+        relation_words = set(d["relation"].lower().replace("_", " ").split())
+        speaker_words = set(d["speaker"].lower().split())
+        edge_score = len(q_words & (relation_words | speaker_words))
+        if edge_score > 0:
+            node_scores[u] = node_scores.get(u, 0) + edge_score
+            node_scores[v] = node_scores.get(v, 0) + edge_score
+    scored = sorted(node_scores.items(), key=lambda x: x[1], reverse=True)
+    return [n for n, _ in scored] or list(G.nodes())
 
 
 def get_subgraph_facts(G: nx.DiGraph, nodes: list, hops: int = 1) -> list:
