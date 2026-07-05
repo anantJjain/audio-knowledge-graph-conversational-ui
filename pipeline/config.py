@@ -20,7 +20,7 @@ ALLOWED_PREDICATES = [
 
 ALLOWED_SPEAKERS = ["Investor", "Advisor"]
 
-GROQ_MODEL = "llama-3.3-70b-versatile"
+GROQ_MODEL = "llama3.3-70b"
 
 
 def get_client():
