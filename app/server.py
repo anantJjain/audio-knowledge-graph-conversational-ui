@@ -2,7 +2,7 @@
 Conversational UI server for the HNI Knowledge Graph POC.
 
 Run:
-    export OPENAI_API_KEY=your_key           # for chat answers
+    export GROQ_API_KEY=your_key             # chat answers + extraction steps (free at console.groq.com)
     export SARVAM_API_KEY=your_key           # for processing real audio
     python app/server.py
     -> open http://localhost:5000
@@ -25,7 +25,7 @@ from flask import Flask, request, jsonify, send_from_directory
 
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(os.path.join(BASE, "pipeline"))
-from config import GRAPH_PICKLE, RAW_AUDIO, OPENAI_MODEL, get_client  # noqa: E402
+from config import GRAPH_PICKLE, RAW_AUDIO, GROQ_MODEL, get_client  # noqa: E402
 
 app = Flask(__name__, static_folder=os.path.join(BASE, "app", "static"))
 
@@ -82,7 +82,7 @@ def ask_llm(question, facts):
         ) or "(no relevant facts found in graph)"
 
         response = client.chat.completions.create(
-            model=OPENAI_MODEL,
+            model=GROQ_MODEL,
             max_tokens=500,
             messages=[
                 {

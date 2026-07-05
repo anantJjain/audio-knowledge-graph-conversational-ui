@@ -20,11 +20,11 @@ ALLOWED_PREDICATES = [
 
 ALLOWED_SPEAKERS = ["Investor", "Advisor"]
 
-OPENAI_MODEL = "llama-3.3-70b-versatile"
+GROQ_MODEL = "llama-3.3-70b-versatile"
 
 
 def get_client():
-    import os
+    # Uses the openai SDK pointed at Groq's OpenAI-compatible endpoint
     from openai import OpenAI
     return OpenAI(
         api_key=os.environ.get("GROQ_API_KEY"),

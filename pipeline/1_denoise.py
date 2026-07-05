@@ -2,12 +2,8 @@
 STEP 1 - Denoise the raw call recording.
 
 Model: DeepFilterNet (local, no API key needed)
-Input : data/recording.wav        (your raw Hinglish call recording)
+Input : data/recording.wav
 Output: data/recording_clean.wav
-
-Run:
-    pip install deepfilternet
-    python 1_denoise.py
 """
 import os
 import sys

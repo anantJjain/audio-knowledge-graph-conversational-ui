@@ -3,7 +3,7 @@ STEP 6 - Entity resolution: merge references that mean the same thing
 but were extracted as different strings, so the graph doesn't end up
 with duplicate nodes for the same real-world entity.
 
-Model: OpenAI (gpt-4o)
+Model: Groq llama-3.3-70b (needs GROQ_API_KEY)
 Input : output/4_raw_triples.json
 Output: output/5_resolved_triples.json
 """
@@ -11,7 +11,7 @@ import os
 import sys
 import json
 sys.path.append(os.path.dirname(__file__))
-from config import RAW_TRIPLES, RESOLVED_TRIPLES, OPENAI_MODEL, get_client
+from config import RAW_TRIPLES, RESOLVED_TRIPLES, GROQ_MODEL, get_client
 
 SYSTEM_PROMPT = """You will be given a list of entity strings extracted from \
 a single financial advisory conversation's knowledge graph. Some of these \
@@ -41,7 +41,7 @@ def resolve_entities(triples: list) -> dict:
     ))
 
     response = client.chat.completions.create(
-        model=OPENAI_MODEL,
+        model=GROQ_MODEL,
         max_tokens=2000,
         messages=[
             {"role": "system", "content": SYSTEM_PROMPT},

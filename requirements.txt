@@ -1,9 +1,20 @@
+# LLM client (used with Groq's OpenAI-compatible API)
 openai
+
+# Graph
 networkx
+
+# Transcription / diarization
 sarvamai
+
+# Audio denoising — pinned for torchaudio.backend compatibility
 deepfilternet==0.5.6
 torch==2.0.1
 torchaudio==2.0.2
+
+# Audio conversion
 pydub
+
+# Web server
 flask
 gunicorn

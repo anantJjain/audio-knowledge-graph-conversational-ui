@@ -2,7 +2,7 @@
 STEP 4 - Flag (not silently fix) likely ASR errors, especially on
 numbers, amounts, and proper nouns (fund names, institutions).
 
-Model: OpenAI (gpt-4o)
+Model: Groq llama-3.3-70b (needs GROQ_API_KEY)
 Input : output/2_role_mapped_transcript.json
 Output: output/3_cleaned_transcript.json  (transcript + a flags list)
 """
@@ -10,7 +10,7 @@ import os
 import sys
 import json
 sys.path.append(os.path.dirname(__file__))
-from config import ROLE_MAPPED_TRANSCRIPT, CLEANED_TRANSCRIPT, OPENAI_MODEL, get_client
+from config import ROLE_MAPPED_TRANSCRIPT, CLEANED_TRANSCRIPT, GROQ_MODEL, get_client
 
 SYSTEM_PROMPT = """You are reviewing an ASR (speech-to-text) transcript of a \
 financial advisory phone call between an Investor and an Advisor. The audio \
@@ -42,7 +42,7 @@ def flag_transcript_issues(segments: list) -> list:
     )
 
     response = client.chat.completions.create(
-        model=OPENAI_MODEL,
+        model=GROQ_MODEL,
         max_tokens=1000,
         messages=[
             {"role": "system", "content": SYSTEM_PROMPT},

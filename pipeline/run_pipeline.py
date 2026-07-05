@@ -3,7 +3,7 @@ Runs the full pipeline end-to-end, Step 1 -> Step 8.
 
 Usage:
     python run_pipeline.py --mock          # sample transcript, no audio/API needed for steps 1-2
-    python run_pipeline.py                 # real run (needs data/recording.wav, SARVAM_API_KEY, OPENAI_API_KEY)
+    python run_pipeline.py                 # real run (needs data/recording.wav, SARVAM_API_KEY, GROQ_API_KEY)
     python run_pipeline.py --skip-audio    # skip steps 1-2, start from existing output/1_diarized_transcript.json
 """
 import subprocess

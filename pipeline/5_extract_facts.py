@@ -1,7 +1,7 @@
 """
 STEP 5 - Extract structured facts (triples) from the transcript.
 
-Model: OpenAI (gpt-4o), using tool-calling to force a fixed
+Model: Groq llama-3.3-70b (needs GROQ_API_KEY), using tool-calling to force a fixed
        JSON schema (subject, predicate, object, speaker, evidence, timestamp).
 Input : output/3_cleaned_transcript.json
 Output: output/4_raw_triples.json
@@ -10,7 +10,7 @@ import os
 import sys
 import json
 sys.path.append(os.path.dirname(__file__))
-from config import CLEANED_TRANSCRIPT, RAW_TRIPLES, OPENAI_MODEL, ALLOWED_PREDICATES, get_client
+from config import CLEANED_TRANSCRIPT, RAW_TRIPLES, GROQ_MODEL, ALLOWED_PREDICATES, get_client
 
 SYSTEM_PROMPT = f"""You are extracting structured facts from a transcript of a \
 financial advisory phone call between an Investor and an Advisor. The \
@@ -66,7 +66,7 @@ def extract_triples(segments: list) -> list:
     )
 
     response = client.chat.completions.create(
-        model=OPENAI_MODEL,
+        model=GROQ_MODEL,
         max_tokens=4000,
         tools=[RECORD_FACT_TOOL],
         tool_choice="auto",

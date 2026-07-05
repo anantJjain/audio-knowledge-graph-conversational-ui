@@ -3,7 +3,7 @@ STEP 8 - Prompt-based search over the knowledge graph.
 
 Approach: keyword-match to find relevant node(s) -> pull all edges
 touching those nodes -> serialize as plain-text facts -> hand to
-OpenAI as context to answer the natural-language question.
+Groq llama-3.3-70b (needs GROQ_API_KEY) to answer the question.
 
 Input : output/6_knowledge_graph.gpickle
 Usage : python 8_query_graph.py "What is the investor's risk appetite?"
@@ -13,7 +13,7 @@ import sys
 import pickle
 import networkx as nx
 sys.path.append(os.path.dirname(__file__))
-from config import GRAPH_PICKLE, OPENAI_MODEL, get_client
+from config import GRAPH_PICKLE, GROQ_MODEL, get_client
 
 
 def find_relevant_nodes(G: nx.DiGraph, question: str) -> list:
@@ -56,7 +56,7 @@ def answer_question(question: str, facts: list) -> str:
     facts_block = "\n".join(facts) if facts else "(no relevant facts found in graph)"
 
     response = client.chat.completions.create(
-        model=OPENAI_MODEL,
+        model=GROQ_MODEL,
         max_tokens=500,
         messages=[
             {
