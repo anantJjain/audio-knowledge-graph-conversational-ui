@@ -18,16 +18,16 @@ Turns a noisy Hinglish investor-advisor call recording into a queryable knowledg
 | 1. Denoise | Removes background noise, echo, and call artifacts from raw audio | [DeepFilterNet](https://github.com/Rikorose/DeepFilterNet) — runs locally, no API key |
 | 2. Diarize + Transcribe | Splits audio by speaker and transcribes Hinglish (mixed Hindi/English) speech | [Sarvam Saaras V3](https://www.sarvam.ai/) — codemix mode with diarization |
 | 3. Map speakers | Maps anonymous `Speaker_N` IDs to roles (Advisor / Investor) | Manual — edit `SPEAKER_ROLE_MAP` in `3_map_speakers.py` |
-| 4. Flag ASR errors | Identifies likely transcription errors in numbers, fund names, and amounts | Cerebras `llama-3.3-70b` |
-| 5. Extract facts | Pulls structured (subject, predicate, object) triples from the transcript using JSON mode | Cerebras `llama-3.3-70b` |
-| 6. Resolve entities | Merges duplicate entity references (e.g. "HDFC Fund" = "HDFC Flexicap Fund") | Cerebras `llama-3.3-70b` |
+| 4. Flag ASR errors | Identifies likely transcription errors in numbers, fund names, and amounts | Cerebras `gpt-oss-120b` |
+| 5. Extract facts | Pulls structured (subject, predicate, object) triples from the transcript using JSON mode | Cerebras `gpt-oss-120b` |
+| 6. Resolve entities | Merges duplicate entity references (e.g. "HDFC Fund" = "HDFC Flexicap Fund") | Cerebras `gpt-oss-120b` |
 | 7. Build graph | Assembles triples into a directed knowledge graph | [NetworkX](https://networkx.org/) — runs locally |
-| 8. Query | Keyword-match retrieval over the graph + LLM-generated answer with evidence citations | Cerebras `llama-3.3-70b` |
+| 8. Query | Keyword-match retrieval over the graph + LLM-generated answer with evidence citations | Cerebras `gpt-oss-120b` |
 
 ### Why these tools?
 - **DeepFilterNet** handles the specific noise profile of phone calls (compression artifacts, background noise) better than general-purpose denoisers.
 - **Sarvam Saaras V3** is purpose-built for Indian languages and codemixed speech — standard ASR models struggle with Hinglish.
-- **Cerebras + llama-3.3-70b** gives fast, high-quality inference for the LLM-heavy steps with no daily token limit on the free tier (rate-limited per minute only).
+- **Cerebras + gpt-oss-120b** gives fast, high-quality inference for the LLM-heavy steps with no daily token limit on the free tier (rate-limited per minute only).
 
 ## Setup
 
