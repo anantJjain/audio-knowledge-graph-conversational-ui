@@ -18,23 +18,23 @@ Turns a noisy Hinglish investor-advisor call recording into a queryable knowledg
 | 1. Denoise | Removes background noise, echo, and call artifacts from raw audio | [DeepFilterNet](https://github.com/Rikorose/DeepFilterNet) — runs locally, no API key |
 | 2. Diarize + Transcribe | Splits audio by speaker and transcribes Hinglish (mixed Hindi/English) speech | [Sarvam Saaras V3](https://www.sarvam.ai/) — codemix mode with diarization |
 | 3. Map speakers | Maps anonymous `Speaker_N` IDs to roles (Advisor / Investor) | Manual — edit `SPEAKER_ROLE_MAP` in `3_map_speakers.py` |
-| 4. Flag ASR errors | Identifies likely transcription errors in numbers, fund names, and amounts | Groq `llama-3.3-70b-versatile` |
-| 5. Extract facts | Pulls structured (subject, predicate, object) triples from the transcript using JSON mode | Groq `llama-3.3-70b-versatile` |
-| 6. Resolve entities | Merges duplicate entity references (e.g. "HDFC Fund" = "HDFC Flexicap Fund") | Groq `llama-3.3-70b-versatile` |
+| 4. Flag ASR errors | Identifies likely transcription errors in numbers, fund names, and amounts | Cerebras `llama-3.3-70b` |
+| 5. Extract facts | Pulls structured (subject, predicate, object) triples from the transcript using JSON mode | Cerebras `llama-3.3-70b` |
+| 6. Resolve entities | Merges duplicate entity references (e.g. "HDFC Fund" = "HDFC Flexicap Fund") | Cerebras `llama-3.3-70b` |
 | 7. Build graph | Assembles triples into a directed knowledge graph | [NetworkX](https://networkx.org/) — runs locally |
-| 8. Query | Keyword-match retrieval over the graph + LLM-generated answer with evidence citations | Groq `llama-3.3-70b-versatile` |
+| 8. Query | Keyword-match retrieval over the graph + LLM-generated answer with evidence citations | Cerebras `llama-3.3-70b` |
 
 ### Why these tools?
 - **DeepFilterNet** handles the specific noise profile of phone calls (compression artifacts, background noise) better than general-purpose denoisers.
 - **Sarvam Saaras V3** is purpose-built for Indian languages and codemixed speech — standard ASR models struggle with Hinglish.
-- **Groq + llama-3.3-70b** gives fast, high-quality inference for the LLM-heavy steps. Note: Groq's free tier has a 100k token/day limit — upgrade to Dev tier ($9/month) for 1M tokens/day if you hit it.
+- **Cerebras + llama-3.3-70b** gives fast, high-quality inference for the LLM-heavy steps with no daily token limit on the free tier (rate-limited per minute only).
 
 ## Setup
 
 ```bash
 pip install -r requirements.txt
 
-export CEREBRAS_API_KEY=your_key_here          # for steps 4, 5, 6, 8 (free at console.groq.com)
+export CEREBRAS_API_KEY=your_key_here          # for steps 4, 5, 6, 8 (free at cloud.cerebras.ai)
 export SARVAM_API_KEY=your_key_here        # for step 2 (skip if using --mock)
 ```
 
@@ -98,7 +98,7 @@ up in your real calls — Steps 5, 6, 7 all read from this single list.
 A web app that wraps the whole pipeline: process a recording from the browser, then chat with the knowledge graph. Answers come with "evidence receipts" (speaker @ timestamp + verbatim quote), and the graph panel highlights the facts each answer used.
 
 ```bash
-export CEREBRAS_API_KEY=your_key         # chat answers + extraction steps (free at console.groq.com)
+export CEREBRAS_API_KEY=your_key         # chat answers + extraction steps (free at cloud.cerebras.ai)
 export SARVAM_API_KEY=your_key       # only needed for real audio processing
 python app/server.py
 # open http://localhost:8080
