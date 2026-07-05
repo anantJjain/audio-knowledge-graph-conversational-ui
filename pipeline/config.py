@@ -20,8 +20,7 @@ ALLOWED_PREDICATES = [
 
 ALLOWED_SPEAKERS = ["Investor", "Advisor"]
 
-GROQ_MODEL = "llama-3.1-8b-instant"        # steps 4, 6, 8
-GROQ_MODEL_TOOLS = "llama-3.3-70b-versatile"  # step 5 — needs reliable tool calling
+GROQ_MODEL = "llama-3.1-8b-instant"
 
 
 def get_client():
