@@ -1,4 +1,4 @@
-# LLM client (used with Groq's OpenAI-compatible API)
+# LLM client (used with Cerebras's OpenAI-compatible API)
 openai
 
 # Graph

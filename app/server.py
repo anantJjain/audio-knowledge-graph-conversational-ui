@@ -2,7 +2,7 @@
 Conversational UI server for the HNI Knowledge Graph POC.
 
 Run:
-    export GROQ_API_KEY=your_key             # chat answers + extraction steps (free at console.groq.com)
+    export CEREBRAS_API_KEY=your_key             # chat answers + extraction steps (free at console.groq.com)
     export SARVAM_API_KEY=your_key           # for processing real audio
     python app/server.py
     -> open http://localhost:5000
@@ -151,7 +151,7 @@ def api_query():
     answer, err = ask_llm(question, facts)
     if err:
         # Still return the retrieved facts so the UI stays useful without a key
-        answer = ("(Groq call failed: set GROQ_API_KEY to get generated "
+        answer = ("(Groq call failed: set CEREBRAS_API_KEY to get generated "
                   f"answers. Error: {err}) The retrieved facts are shown below.")
 
     return jsonify({
@@ -216,8 +216,8 @@ def api_process():
     mode = request.form.get("mode", "mock")
     run_script = os.path.join(BASE, "pipeline", "run_pipeline.py")
 
-    if not os.environ.get("GROQ_API_KEY"):
-        return jsonify({"error": "GROQ_API_KEY is not set. Add it in your Render environment variables."}), 500
+    if not os.environ.get("CEREBRAS_API_KEY"):
+        return jsonify({"error": "CEREBRAS_API_KEY is not set. Add it in your Render environment variables."}), 500
 
     if mode == "real":
         f = request.files.get("audio")

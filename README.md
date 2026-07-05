@@ -34,7 +34,7 @@ Turns a noisy Hinglish investor-advisor call recording into a queryable knowledg
 ```bash
 pip install -r requirements.txt
 
-export GROQ_API_KEY=your_key_here          # for steps 4, 5, 6, 8 (free at console.groq.com)
+export CEREBRAS_API_KEY=your_key_here          # for steps 4, 5, 6, 8 (free at console.groq.com)
 export SARVAM_API_KEY=your_key_here        # for step 2 (skip if using --mock)
 ```
 
@@ -98,14 +98,14 @@ up in your real calls — Steps 5, 6, 7 all read from this single list.
 A web app that wraps the whole pipeline: process a recording from the browser, then chat with the knowledge graph. Answers come with "evidence receipts" (speaker @ timestamp + verbatim quote), and the graph panel highlights the facts each answer used.
 
 ```bash
-export GROQ_API_KEY=your_key         # chat answers + extraction steps (free at console.groq.com)
+export CEREBRAS_API_KEY=your_key         # chat answers + extraction steps (free at console.groq.com)
 export SARVAM_API_KEY=your_key       # only needed for real audio processing
 python app/server.py
 # open http://localhost:8080
 ```
 
 In the UI:
-- **Process sample call** — runs the pipeline on the built-in mock transcript (no Sarvam key needed; needs `GROQ_API_KEY` for extraction steps).
+- **Process sample call** — runs the pipeline on the built-in mock transcript (no Sarvam key needed; needs `CEREBRAS_API_KEY` for extraction steps).
 - **Process a recording** — upload an audio file; runs denoise → Sarvam diarize/transcribe → extraction → graph. CPU-intensive, can take 30+ min.
 - Then ask questions in the chat: answers cite speaker + timestamp, and the graph pane lights up the nodes involved.
 

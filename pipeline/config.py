@@ -24,11 +24,11 @@ GROQ_MODEL = "llama-3.3-70b-versatile"
 
 
 def get_client():
-    # Uses the openai SDK pointed at Groq's OpenAI-compatible endpoint
+    # Uses the openai SDK pointed at Cerebras's OpenAI-compatible endpoint
     from openai import OpenAI
     return OpenAI(
-        api_key=os.environ.get("GROQ_API_KEY"),
-        base_url="https://api.groq.com/openai/v1",
+        api_key=os.environ.get("CEREBRAS_API_KEY"),
+        base_url="https://api.cerebras.ai/v1",
     )
 
 _BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
