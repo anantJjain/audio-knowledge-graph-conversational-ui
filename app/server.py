@@ -29,6 +29,10 @@ from config import GRAPH_PICKLE, RAW_AUDIO, GROQ_MODEL, get_client  # noqa: E402
 
 app = Flask(__name__, static_folder=os.path.join(BASE, "app", "static"))
 
+# Clear any pre-existing graph so each deployment starts with an empty state
+if os.path.exists(GRAPH_PICKLE):
+    os.remove(GRAPH_PICKLE)
+
 
 # ----------------------------------------------------------------- helpers
 def load_graph():
