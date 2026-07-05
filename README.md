@@ -18,16 +18,16 @@ Turns a noisy Hinglish investor-advisor call recording into a queryable knowledg
 | 1. Denoise | Removes background noise, echo, and call artifacts from raw audio | [DeepFilterNet](https://github.com/Rikorose/DeepFilterNet) — runs locally, no API key |
 | 2. Diarize + Transcribe | Splits audio by speaker and transcribes Hinglish (mixed Hindi/English) speech | [Sarvam Saaras V3](https://www.sarvam.ai/) — codemix mode with diarization |
 | 3. Map speakers | Maps anonymous `Speaker_N` IDs to roles (Advisor / Investor) | Manual — edit `SPEAKER_ROLE_MAP` in `3_map_speakers.py` |
-| 4. Flag ASR errors | Identifies likely transcription errors in numbers, fund names, and amounts | Groq `llama-3.1-8b-instant` |
-| 5. Extract facts | Pulls structured (subject, predicate, object) triples from the transcript using JSON mode | Groq `llama-3.1-8b-instant` |
-| 6. Resolve entities | Merges duplicate entity references (e.g. "HDFC Fund" = "HDFC Flexicap Fund") | Groq `llama-3.1-8b-instant` |
+| 4. Flag ASR errors | Identifies likely transcription errors in numbers, fund names, and amounts | Groq `llama-3.3-70b-versatile` |
+| 5. Extract facts | Pulls structured (subject, predicate, object) triples from the transcript using JSON mode | Groq `llama-3.3-70b-versatile` |
+| 6. Resolve entities | Merges duplicate entity references (e.g. "HDFC Fund" = "HDFC Flexicap Fund") | Groq `llama-3.3-70b-versatile` |
 | 7. Build graph | Assembles triples into a directed knowledge graph | [NetworkX](https://networkx.org/) — runs locally |
-| 8. Query | Keyword-match retrieval over the graph + LLM-generated answer with evidence citations | Groq `llama-3.1-8b-instant` |
+| 8. Query | Keyword-match retrieval over the graph + LLM-generated answer with evidence citations | Groq `llama-3.3-70b-versatile` |
 
 ### Why these tools?
 - **DeepFilterNet** handles the specific noise profile of phone calls (compression artifacts, background noise) better than general-purpose denoisers.
 - **Sarvam Saaras V3** is purpose-built for Indian languages and codemixed speech — standard ASR models struggle with Hinglish.
-- **Groq + llama-3.1-8b-instant** gives fast, free inference for the LLM-heavy steps — fits within Groq's free tier token limits.
+- **Groq + llama-3.3-70b** gives fast, high-quality inference for the LLM-heavy steps. Note: Groq's free tier has a 100k token/day limit — upgrade to Dev tier ($9/month) for 1M tokens/day if you hit it.
 
 ## Setup
 
